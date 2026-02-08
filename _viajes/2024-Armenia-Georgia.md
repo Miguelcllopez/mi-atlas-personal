@@ -4,7 +4,7 @@ title: "Tierras del Cáucaso: Armenia y Georgia"
 date: 2023-12-5 10:00:00 +0100
 categoria: Expedición
 etiquetas: [Montaña, Monasterios, 4x4]
-miniatura: /assets/img/viajes/armenia/IMG20231205172344.jpg
+miniatura: /assets/img/viajes/armenia/IMG20231206111707.jpg
 # DATOS DEL MAPA (Busca las coordenadas en Google Maps)
 latitud: 41.7151
 longitud: 44.8271

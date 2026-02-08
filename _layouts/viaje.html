@@ -129,8 +129,8 @@ layout: default
 
 <article class="narrativa-articulo">
 
-  <header class="narrativa-cabecera" style="background-image: url('{{ page.miniatura }}');">
-    <div class="capa-oscura">
+<header class="narrativa-cabecera" style="background-image: url('{{ page.miniatura | relative_url }}');">    
+  <div class="capa-oscura">
       <div class="contenedor-titulo">
         
         {% if page.categoria %}
@@ -155,9 +155,7 @@ layout: default
 
           <span class="separador" style="opacity: 0.5; margin: 0 10px;">|</span>
 
-         <a href="{{ '/' | relative_url }}" class="coordenadas-link">
-            🏠 Inicio
-         </a>
+         <a href="{{ '/' | relative_url }}" class="coordenadas-link">🏠 Inicio</a>
         </div>
         </div>
     </div>
