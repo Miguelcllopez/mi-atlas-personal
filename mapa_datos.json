@@ -1,0 +1,24 @@
+---
+layout: null
+---
+[
+  {% for viaje in site.viajes %}
+    {
+      "type": "Feature", 
+      "properties": {
+        "titulo": "{{ viaje.title | escape }}",
+        "url": "{{ viaje.url | replace: '/_viajes/', '/viajes/' }}",
+        "fecha": "{{ viaje.date | date: "%d/%m/%Y" }}",
+        "categoria": "{{ viaje.categoria | default: 'Sin categoría' }}",
+        "miniatura": "{{ viaje.miniatura | default: '' }}"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          {{ viaje.longitud | default: 0 }}, 
+          {{ viaje.latitud | default: 0 }}
+        ]
+      }
+    }{% unless forloop.last %},{% endunless %}
+  {% endfor %}
+]

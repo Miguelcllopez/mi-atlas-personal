@@ -1,0 +1,30 @@
+# _config.yml
+title: "Bitácora de Ingeniería y Vida"
+url: "https://tudominio.com"
+
+# --- ESTA ES LA LÍNEA CRÍTICA QUE FALTA ---
+theme: minima
+# ------------------------------------------
+
+# Definición de Colecciones
+collections:
+  viajes:
+    output: true
+    permalink: /viajes/:path/
+  proyectos:
+    output: true
+    permalink: /proyectos/:path/
+  libros:
+    output: true
+  recetas:
+    output: true
+
+# Configuración de construcción
+markdown: kramdown
+
+exclude:
+  - entorno_img
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - procesar_fotos.py

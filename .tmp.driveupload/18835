@@ -1,0 +1,39 @@
+[
+  
+    {
+      "type": "Feature", 
+      "properties": {
+        "titulo": "Tierras del Cáucaso: Armenia y Georgia",
+        "url": "/viajes/2024-Armenia-Georgia/",
+        "fecha": "05/12/2023",
+        "categoria": "Expedición",
+        "miniatura": "/assets/img/viajes/armenia/IMG20231205172344.jpg"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.8271, 
+          41.7151
+        ]
+      }
+    },
+  
+    {
+      "type": "Feature", 
+      "properties": {
+        "titulo": "Expedición a China",
+        "url": "/viajes/2026-china/",
+        "fecha": "20/08/2025",
+        "categoria": "Viajes",
+        "miniatura": "/assets/img/china/IMG20250828094712.jpg"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          116.4074, 
+          39.9042
+        ]
+      }
+    }
+  
+]

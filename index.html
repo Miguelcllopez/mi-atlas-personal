@@ -1,0 +1,126 @@
+---
+layout: default
+title: "Panel de Control"
+---
+
+<style>
+  /* 1. Asegurar altura del mapa */
+  #mapa-principal {
+    height: 70vh !important; /* Fuerza al mapa a ocupar el 70% de la pantalla */
+    width: 100%;
+    border: 2px solid #333;
+    background-color: #e0e0e0; /* Color de fondo por si tarda en cargar */
+    margin-top: 20px;
+  }
+
+  /* 2. Estilos básicos para la portada (Hero) */
+  .hero-section {
+    background-color: #0b1e33; /* Azul oscuro ingeniería */
+    color: white;
+    padding: 3rem 1rem;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .hero-titulo {
+    font-size: 2.5rem;
+    font-family: serif;
+    margin-bottom: 0.5rem;
+  }
+
+  /* 3. Estilos para los botones (Grid) */
+  .grid-menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    padding: 0 1rem;
+  }
+
+  .tarjeta-link {
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    padding: 1.5rem;
+    border-radius: 5px;
+    width: 200px;
+    text-align: center;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    transition: background 0.2s;
+  }
+
+  .tarjeta-link:hover {
+    background: #e2e6ea;
+    text-decoration: none;
+  }
+</style>
+
+<div class="hero-section">
+  <h1 class="hero-titulo">Bitácora de Ingeniería Aeroespacial</h1>
+  <p>Registro de operaciones, lecturas y proyectos.</p>
+</div>
+
+<div class="grid-menu">
+  <a href="/proyectos/" class="tarjeta-link">🚀 Proyectos</a>
+  <a href="/libros/" class="tarjeta-link">📚 Biblioteca</a>
+  <a href="/recetas/" class="tarjeta-link">🧪 Recetas</a>
+</div>
+
+<div style="max-width: 1200px; margin: 0 auto; padding: 0 1rem;">
+  <h2 style="border-bottom: 2px solid #333; padding-bottom: 10px;">Atlas de Operaciones</h2>
+  
+  <div id="mapa-principal"></div>
+</div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<script>
+  // 1. Inicializar el mapa (Coordenadas del mundo)
+  var map = L.map('mapa-principal').setView([20, 0], 2);
+
+  // 2. Cargar capa base (OpenStreetMap - Estilo limpio)
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: 'abcd',
+      maxZoom: 19
+  }).addTo(map);
+
+  // 3. Cargar datos GeoJSON (El nuevo estándar)
+  fetch('/mapa_datos.json')
+      .then(response => response.json())
+      .then(data => {
+          
+          // Recorremos cada "Feature" (viaje) del archivo
+          data.forEach(feature => {
+              
+              // EXTRACTOR DE DATOS (Protocolo GeoJSON)
+              // GeoJSON guarda [Longitud, Latitud], pero Leaflet usa [Latitud, Longitud]
+              var lat = feature.geometry.coordinates[1]; 
+              var lon = feature.geometry.coordinates[0];
+              var props = feature.properties; // Aquí están título, url, foto...
+
+              // Validar que no sean coordenadas nulas (0,0)
+              if (lat !== 0 && lon !== 0) {
+                  
+                  // Crear marcador
+                  var marker = L.marker([lat, lon]).addTo(map);
+                  
+                  // Crear Popup (Ventana de información)
+                  var popupContent = `
+                      <div style="text-align:center; min-width: 150px;">
+                          ${props.miniatura ? `<img src="${props.miniatura}" style="width:100%; border-radius:4px; margin-bottom:8px;">` : ''}
+                          <h3 style="margin:0; font-size:1rem; color:#007bff;">${props.titulo}</h3>
+                          <p style="margin:5px 0; font-size:0.8rem; color:#666;">${props.fecha}</p>
+                          <a href="${props.url}" style="display:inline-block; margin-top:5px; padding:4px 10px; background:#007bff; color:white; text-decoration:none; border-radius:4px; font-size:0.8rem;">Ver Diario</a>
+                      </div>
+                  `;
+
+                  marker.bindPopup(popupContent);
+              }
+          });
+      })
+      .catch(error => console.error('Error cargando el mapa:', error));
+</script>

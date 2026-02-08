@@ -1,0 +1,348 @@
+/* --- ESTILOS DEL CUADRO DE MANDO (INDEX) --- */
+
+/* 1. Portada (Hero) */
+.portada-hero {
+  height: 80vh; /* Ocupa el 80% de la altura de la pantalla */
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  margin-bottom: 0; /* Pegado a la siguiente sección */
+}
+
+.capa-filtro {
+  background: rgba(0, 20, 40, 0.7); /* Azul oscuro técnico transparente */
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.contenido-hero h1 {
+  font-size: 3.5rem;
+  margin: 1rem 0;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+.subtitulo-hero {
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  font-size: 0.9rem;
+  color: #aaddff;
+}
+
+.bio-hero {
+  max-width: 600px;
+  margin: 0 auto 2rem auto;
+  font-size: 1.2rem;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+.boton-accion {
+  display: inline-block;
+  padding: 1rem 2rem;
+  border: 2px solid white;
+  color: white;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+}
+
+.boton-accion:hover {
+  background: white;
+  color: #001428;
+}
+
+/* 2. Módulos de Navegación (Grid) */
+.panel-control {
+  padding: 4rem 2rem;
+  background-color: #f4f4f4;
+}
+
+.contenedor-grid {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Responsivo automático */
+  gap: 2rem;
+}
+
+.tarjeta-modulo {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #333;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid #eee;
+  text-align: center;
+}
+
+.tarjeta-modulo:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  text-decoration: none; /* Eliminar subrayado de enlace */
+}
+
+.icono-modulo {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.tarjeta-modulo h3 {
+  margin-top: 0;
+  color: #0056b3;
+}
+
+/* 3. Ajustes del Mapa en Index */
+#mapa-seccion {
+  padding: 4rem 2rem;
+  background: white;
+}
+
+.cabecera-seccion {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+#mapa-principal {
+  height: 600px; /* Altura fija para el mapa */
+  width: 100%;
+  border-radius: 4px;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+  z-index: 0; /* Evitar que tape el menú */
+}
+
+/* --- ESTILO DE GALERÍA DE FOTOS --- */
+.galeria-grid {
+  display: grid;
+  /* Esto crea columnas automáticas. Mínimo 250px de ancho cada foto */
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px; /* Espacio entre fotos */
+  margin: 2rem 0;
+}
+
+.galeria-grid img {
+  width: 100%;
+  height: 250px; /* Altura fija para que queden alineadas */
+  object-fit: cover; /* Recorta la imagen para que llene el cuadro sin deformarse */
+  border-radius: 4px;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+  margin: 0 !important; /* Sobrescribimos el margen por defecto */
+}
+
+/* Efecto al pasar el ratón */
+.galeria-grid img:hover {
+  transform: scale(1.05); /* Zoom suave */
+  z-index: 2;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+/* --- SISTEMA DE VISUALIZACIÓN MODULAR --- */
+
+/* MODELO 1: EL MOSAICO (Estilo Pinterest) 
+   Ideal para mezclar fotos verticales y horizontales. 
+   Se ajustan como ladrillos de diferente tamaño. */
+.layout-mosaico {
+  column-count: 3; /* 3 columnas en PC */
+  column-gap: 15px;
+  margin: 2rem 0;
+  
+  img {
+    width: 100%;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    break-inside: avoid; /* Evita que una foto se corte entre columnas */
+    transition: transform 0.3s ease, filter 0.3s ease;
+    cursor: zoom-in;
+  }
+
+  img:hover {
+    transform: scale(1.02);
+    filter: brightness(1.1);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  }
+}
+
+/* MODELO 2: EL BENTO (Estilo Apple / Instagram)
+   La primera foto es GIGANTE (Hero), las demás la acompañan.
+   Perfecto para destacar una foto increíble. */
+.layout-bento {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 columnas */
+  grid-auto-rows: 200px; /* Altura base */
+  gap: 10px;
+  margin: 2rem 0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+    transition: opacity 0.3s;
+  }
+
+  /* Ingeniería CSS: La primera foto ocupa 2x2 espacios */
+  img:first-child {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+  
+  /* La segunda foto es ancha */
+  img:nth-child(2) {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+}
+
+/* MODELO 3: EL CARRETE (Filmstrip)
+   Desplazamiento horizontal. Muy moderno y limpio en móviles.
+   Ideal para secuencias temporales. */
+.layout-carrete {
+  display: flex;
+  overflow-x: auto; /* Scroll horizontal */
+  gap: 20px;
+  padding-bottom: 20px; /* Espacio para la barra de scroll */
+  scroll-snap-type: x mandatory; /* Efecto magnético */
+  
+  img {
+    height: 400px; /* Altura fija, ancho variable */
+    flex-shrink: 0;
+    border-radius: 8px;
+    scroll-snap-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+}
+
+/* --- RESPONSIVIDAD (MÓVIL) --- */
+@media (max-width: 768px) {
+  .layout-mosaico { column-count: 2; }
+  .layout-bento { display: flex; flex-direction: column; } /* En móvil vuelve a ser pila */
+  .layout-bento img { height: auto; }
+  .layout-carrete img { height: 300px; }
+}
+/* --- CONTROLES DE GALERÍA --- */
+.controles-galeria {
+  text-align: center;
+  margin: 2rem 0 1rem 0;
+  padding: 10px;
+  background: #f4f4f4;
+  border-radius: 8px;
+  display: inline-block; /* Para que se ajuste al contenido */
+}
+
+.btn-vista {
+  background: white;
+  border: 1px solid #ddd;
+  padding: 5px 15px;
+  margin: 0 5px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.btn-vista:hover {
+  background: #e2e6ea;
+}
+
+.btn-vista.active {
+  background: #007bff; /* Azul ingeniero */
+  color: white;
+  border-color: #007bff;
+}
+
+/* Asegurar que la galería dinámica tenga transición suave al cambiar */
+.galeria-dinamica {
+  transition: opacity 0.3s ease;
+}
+
+/* --- PARCHE DE INGENIERÍA PARA JEKYLL --- */
+/* Esto hace que los párrafos intermedios "desaparezcan" para el diseño */
+.galeria-dinamica p {
+  display: contents; 
+}
+
+/* Asegurar que las imágenes llenen el hueco si Jekyll las ha encogido */
+.galeria-dinamica img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* --- DISEÑO DE INGENIERÍA: PANEL DE CONTROL DE GALERÍA --- */
+
+.controles-galeria {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Centrado perfecto */
+  gap: 12px; /* Espacio entre elementos */
+  background: #f8f9fa; /* Gris muy suave, casi blanco */
+  padding: 12px 24px;
+  border-radius: 50px; /* Bordes totalmente redondeados (Cápsula) */
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05); /* Sombra sutil para dar profundidad */
+  width: fit-content;
+  margin: 2rem auto; /* Centrado horizontalmente en la página */
+  border: 1px solid #e9ecef;
+}
+
+/* El texto "Vista:" */
+.controles-galeria span {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-weight: 600;
+  color: #6c757d;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  margin-right: 8px;
+}
+
+/* Los Botones */
+.btn-vista {
+  background: white;
+  border: 1px solid #dee2e6;
+  color: #495057;
+  padding: 8px 16px;
+  border-radius: 20px; /* Redondeados */
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out; /* Animación suave */
+  display: flex;
+  align-items: center;
+  gap: 6px; /* Espacio entre el icono y el texto */
+}
+
+/* Efecto al pasar el ratón (Hover) */
+.btn-vista:hover {
+  background: #e9ecef;
+  transform: translateY(-1px); /* Se eleva un poquito */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Botón Activo (El seleccionado) */
+.btn-vista.active {
+  background: #007bff; /* Azul Ingeniero */
+  color: white;
+  border-color: #007bff;
+  box-shadow: 0 4px 6px rgba(0, 123, 255, 0.25); /* Resplandor azul */
+}
+
+/* Ajuste para móviles */
+@media (max-width: 600px) {
+  .controles-galeria {
+    flex-wrap: wrap;
+    justify-content: center;
+    border-radius: 16px; /* Menos redondeado en móvil para aprovechar espacio */
+    width: 100%;
+  }
+}

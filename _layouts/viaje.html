@@ -1,0 +1,219 @@
+---
+layout: default
+---
+
+<style>
+    /* --- 1. ARREGLO DEL HEADER (SIN CAMBIOS) --- */
+    .narrativa-cabecera {
+        position: relative;
+        height: 60vh; 
+        min-height: 400px;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        margin-bottom: 2rem;
+        border-radius: 0 0 12px 12px;
+        overflow: hidden;
+    }
+    .capa-oscura {
+        background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);
+        width: 100%;
+        padding: 4rem 1.5rem 2rem 1.5rem;
+        text-align: center;
+        color: white;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+    .contenedor-titulo h1 { font-size: 3.5rem; font-weight: 800; margin: 0.5rem 0; line-height: 1.1; color: #fff; }
+    .meta-categoria { font-size: 0.85rem; letter-spacing: 3px; text-transform: uppercase; background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 20px; backdrop-filter: blur(5px); }
+    .meta-datos { font-size: 1.1rem; opacity: 0.9; margin-top: 10px; font-weight: 300; }
+    .coordenadas-link { color: #8ed6fb; text-decoration: none; font-family: monospace; margin-left: 5px; }
+
+    /* --- 2. MOTOR HÍBRIDO (FOTO + VIDEO) --- */
+    .galeria-dinamica p, .galeria-dinamica br { display: none !important; }
+    
+    /* AQUI ESTÁ LA MAGIA: APLICAMOS REGLAS A IMG Y VIDEO */
+    .galeria-dinamica img, 
+    .galeria-dinamica video {
+        display: block !important;
+        max-width: 100%;
+        width: 100%;          /* Fuerza a ocupar el ancho de su columna */
+        object-fit: cover;    /* Recorta el video si no encaja, igual que la foto */
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 8px;
+        transition: transform 0.3s ease;
+    }
+
+    /* MODO MOSAICO */
+    .galeria-dinamica.layout-mosaico {
+        display: block !important;
+        column-count: 3 !important;
+        column-gap: 15px !important;
+    }
+    .galeria-dinamica.layout-mosaico img,
+    .galeria-dinamica.layout-mosaico video { 
+        margin-bottom: 15px !important; 
+        height: auto !important; /* Mantiene proporción original */
+    }
+
+    /* MODO DESTACADO (BENTO) */
+    .galeria-dinamica.layout-bento {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        grid-auto-rows: 200px !important;
+        gap: 10px !important;
+        column-count: auto !important;
+    }
+    .galeria-dinamica.layout-bento img,
+    .galeria-dinamica.layout-bento video { 
+        height: 100% !important; 
+        width: 100% !important;
+    }
+    /* El primer elemento (sea foto o video) es grande */
+    .galeria-dinamica.layout-bento > :first-child { 
+        grid-column: span 2; 
+        grid-row: span 2; 
+    }
+
+    /* MODO CARRETE */
+    .galeria-dinamica.layout-carrete {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        gap: 15px !important;
+        padding-bottom: 15px;
+        column-count: auto !important;
+    }
+    .galeria-dinamica.layout-carrete img,
+    .galeria-dinamica.layout-carrete video { 
+        height: 300px !important; 
+        width: auto !important; /* Ancho automático según ratio */
+        flex: 0 0 auto; 
+    }
+
+    /* --- 3. DISEÑO DE BOTONES (SIN CAMBIOS) --- */
+    .controles-galeria {
+        display: inline-flex !important;
+        align-items: center;
+        gap: 8px;
+        background: #ffffff;
+        padding: 6px 8px;
+        border-radius: 50px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        border: 1px solid #eaeaea;
+        margin: 0 auto 2rem auto !important;
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+    }
+    .etiqueta-vista { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: #999; margin-left: 10px; margin-right: 5px; }
+    .btn-vista { background: transparent; border: none; padding: 8px 16px; border-radius: 40px; font-size: 14px; font-weight: 500; color: #555; cursor: pointer; transition: all 0.2s ease; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    .btn-vista:hover { background: #f5f5f5; color: #000; }
+    .btn-vista.active { background: #007bff !important; color: white !important; box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3); }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+        .narrativa-cabecera { height: 50vh; }
+        .contenedor-titulo h1 { font-size: 2rem; }
+        .galeria-dinamica.layout-mosaico { column-count: 2 !important; }
+        .galeria-dinamica.layout-bento { display: flex !important; flex-direction: column; }
+        .galeria-dinamica.layout-bento img, .galeria-dinamica.layout-bento video { height: auto !important; }
+        .controles-galeria { width: 95%; left: 2.5%; transform: none; display: flex !important; justify-content: space-between; overflow-x: auto;}
+        .etiqueta-vista { display: none; } 
+    }
+</style>
+
+<article class="narrativa-articulo">
+
+  <header class="narrativa-cabecera" style="background-image: url('{{ page.miniatura }}');">
+    <div class="capa-oscura">
+      <div class="contenedor-titulo">
+        
+        {% if page.categoria %}
+        <span class="meta-categoria">{{ page.categoria }}</span>
+        {% endif %}
+        
+        <h1>{{ page.title }}</h1>
+        
+        <div class="meta-datos">
+          <time datetime="{{ page.date | date_to_xmlschema }}">
+            {{ page.date | date: "%-d de %B de %Y" }}
+          </time>
+          
+          <span class="separador">•</span>
+          
+          <span class="ubicacion">
+            {{ page.ubicacion_nombre | default: "Ubicación" }}
+            <a href="https://www.google.com/search?q={{ page.ubicacion_nombre | url_encode }}" target="_blank" class="coordenadas-link" style="color: #4285F4;">
+              🔍 Info
+            </a>
+          </span>
+
+          <span class="separador" style="opacity: 0.5; margin: 0 10px;">|</span>
+
+          <a href="{{ '/' | relative_url }}" class="coordenadas-link" style="color: #ffdd57; text-decoration: none; border-bottom: 1px dotted #ffdd57;">
+            🏠 Inicio
+          </a>
+        </div>
+        </div>
+    </div>
+  </header>
+
+  <div class="narrativa-contenido">
+    {{ content }}
+  </div>
+
+  <script>
+    window.cambiarVista = function(nombreClase, boton) {
+        var galeria = document.querySelector('.galeria-dinamica');
+        if (!galeria) return;
+        
+        galeria.classList.remove('layout-mosaico', 'layout-bento', 'layout-carrete');
+        galeria.classList.add(nombreClase);
+        
+        document.querySelectorAll('.btn-vista').forEach(b => b.classList.remove('active'));
+        if(boton) boton.classList.add('active');
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var galeria = document.querySelector('.galeria-dinamica');
+        if (galeria) {
+            // Asegurar clase por defecto
+            if (!galeria.classList.contains('layout-mosaico') && 
+                !galeria.classList.contains('layout-bento') && 
+                !galeria.classList.contains('layout-carrete')) {
+                galeria.classList.add('layout-mosaico');
+            }
+
+            // Crear Panel de Control
+            var controles = document.createElement('div');
+            controles.className = 'controles-galeria';
+            controles.innerHTML = `
+                <span class="etiqueta-vista">VISTA:</span>
+                <button onclick="cambiarVista('layout-mosaico', this)" class="btn-vista active">🧱 Mosaico</button>
+                <button onclick="cambiarVista('layout-bento', this)" class="btn-vista">🍱 Destacado</button>
+                <button onclick="cambiarVista('layout-carrete', this)" class="btn-vista">🎞️ Carrete</button>
+            `;
+            
+            galeria.parentNode.insertBefore(controles, galeria);
+        }
+    });
+  </script>
+
+  <footer class="narrativa-pie">
+    <hr style="margin: 3rem 0; border: 0; border-top: 1px solid #eee;">
+    <div class="navegacion-entradas" style="display: flex; justify-content: space-between;">
+      {% if page.previous.url %}
+        <a href="{{ page.previous.url }}" class="prev" style="text-decoration:none; color:#333;">← {{ page.previous.title }}</a>
+      {% endif %}
+      {% if page.next.url %}
+        <a href="{{ page.next.url }}" class="next" style="text-decoration:none; color:#333;">{{ page.next.title }} →</a>
+      {% endif %}
+    </div>
+  </footer>
+
+</article>
