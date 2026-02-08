@@ -1,7 +1,7 @@
 # _config.yml
 title: "Bitácora de Ingeniería y Vida"
-url: "https://tudominio.com"
-
+url: "https://miguelcllopez.github.io"     # Tu dominio base
+baseurl: "/mi-atlas-personal"
 # --- ESTA ES LA LÍNEA CRÍTICA QUE FALTA ---
 theme: minima
 # ------------------------------------------
