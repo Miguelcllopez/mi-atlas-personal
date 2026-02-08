@@ -4,56 +4,88 @@ title: "Panel de Control"
 ---
 
 <style>
-  /* 1. Asegurar altura del mapa */
+  /* --- ESTILOS DEL MAPA Y CABECERA --- */
   #mapa-principal {
-    height: 70vh !important; /* Fuerza al mapa a ocupar el 70% de la pantalla */
+    height: 70vh !important;
     width: 100%;
     border: 2px solid #333;
-    background-color: #e0e0e0; /* Color de fondo por si tarda en cargar */
+    background-color: #e0e0e0;
     margin-top: 20px;
+    z-index: 1;
+    border-radius: 8px;
   }
 
-  /* 2. Estilos básicos para la portada (Hero) */
   .hero-section {
-    background-color: #0b1e33; /* Azul oscuro ingeniería */
+    background-color: #0b1e33;
     color: white;
     padding: 3rem 1rem;
     text-align: center;
     margin-bottom: 2rem;
   }
-  
-  .hero-titulo {
-    font-size: 2.5rem;
-    font-family: serif;
-    margin-bottom: 0.5rem;
-  }
+  .hero-titulo { font-family: serif; font-size: 2.5rem; margin-bottom: 0.5rem; }
 
-  /* 3. Estilos para los botones (Grid) */
+  /* --- ESTILOS DEL MENÚ --- */
   .grid-menu {
     display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
     justify-content: center;
+    gap: 1rem;
     margin-bottom: 2rem;
-    padding: 0 1rem;
+    flex-wrap: wrap;
   }
-
   .tarjeta-link {
     background: #f8f9fa;
     border: 1px solid #ddd;
-    padding: 1.5rem;
+    padding: 1rem 2rem;
     border-radius: 5px;
-    width: 200px;
-    text-align: center;
     text-decoration: none;
     color: #333;
     font-weight: bold;
-    transition: background 0.2s;
+    transition: all 0.2s;
   }
+  .tarjeta-link:hover { background: #e2e6ea; transform: translateY(-2px); }
 
-  .tarjeta-link:hover {
-    background: #e2e6ea;
-    text-decoration: none;
+  /* --- ESTILOS DE LA LISTA DE VIAJES (LO QUE FALTABA) --- */
+  .grid-viajes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+    margin-bottom: 4rem;
+  }
+  .tarjeta-viaje {
+    background: white;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease;
+  }
+  .tarjeta-viaje:hover { transform: translateY(-5px); box-shadow: 0 10px 15px rgba(0,0,0,0.1); }
+  
+  .tarjeta-thumb {
+    height: 200px;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+  }
+  .tarjeta-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s;
+  }
+  .tarjeta-viaje:hover .tarjeta-thumb img { transform: scale(1.05); }
+  
+  .tarjeta-info { padding: 1.5rem; }
+  .tarjeta-fecha { 
+    background: #0b1e33; color: white; 
+    padding: 3px 8px; border-radius: 4px; 
+    font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px;
+  }
+  .tarjeta-titulo { margin: 10px 0; font-size: 1.25rem; }
+  .tarjeta-titulo a { text-decoration: none; color: #1a1a1a; }
+  .btn-leer { 
+    color: #007bff; font-weight: bold; text-decoration: none; 
+    font-size: 0.9rem; margin-top: 10px; display: inline-block; 
   }
 </style>
 
@@ -63,67 +95,85 @@ title: "Panel de Control"
 </div>
 
 <div class="grid-menu">
-  <a href="/proyectos/" class="tarjeta-link">🚀 Proyectos</a>
-  <a href="/libros/" class="tarjeta-link">📚 Biblioteca</a>
-  <a href="/recetas/" class="tarjeta-link">🧪 Recetas</a>
+  <a href="{{ '/proyectos/' | relative_url }}" class="tarjeta-link">🚀 Proyectos</a>
+  <a href="{{ '/libros/' | relative_url }}" class="tarjeta-link">📚 Biblioteca</a>
+  <a href="{{ '/recetas/' | relative_url }}" class="tarjeta-link">🧪 Recetas</a>
 </div>
 
 <div style="max-width: 1200px; margin: 0 auto; padding: 0 1rem;">
-  <h2 style="border-bottom: 2px solid #333; padding-bottom: 10px;">Atlas de Operaciones</h2>
-  
+  <h2 style="border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
+    🌍 Atlas de Operaciones
+  </h2>
   <div id="mapa-principal"></div>
 </div>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<div style="max-width: 1200px; margin: 4rem auto; padding: 0 1rem;">
+  <h2 style="border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 30px;">
+    📖 Diarios de Expedición
+  </h2>
+
+  <div class="grid-viajes">
+    {% for viaje in site.viajes reversed %}
+      <article class="tarjeta-viaje">
+        
+        <div class="tarjeta-thumb">
+          <a href="{{ viaje.url | relative_url }}">
+            <img src="{% if viaje.miniatura contains 'http' %}{{ viaje.miniatura }}{% else %}{{ viaje.miniatura | relative_url }}{% endif %}" 
+                 alt="{{ viaje.title }}" loading="lazy">
+          </a>
+        </div>
+
+        <div class="tarjeta-info">
+          <span class="tarjeta-fecha">{{ viaje.date | date: "%Y" }}</span>
+          <h3 class="tarjeta-titulo">
+            <a href="{{ viaje.url | relative_url }}">{{ viaje.title }}</a>
+          </h3>
+          <p style="color: #666; font-size: 0.95rem; line-height: 1.5;">
+            {{ viaje.excerpt | strip_html | truncatewords: 20 }}
+          </p>
+          <a href="{{ viaje.url | relative_url }}" class="btn-leer">Leer crónica →</a>
+        </div>
+
+      </article>
+    {% endfor %}
+  </div>
+</div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-  // 1. Inicializar el mapa (Coordenadas del mundo)
+  // Configuración del Mapa
   var map = L.map('mapa-principal').setView([20, 0], 2);
 
-  // 2. Cargar capa base (OpenStreetMap - Estilo limpio)
   L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      subdomains: 'abcd',
+      attribution: '&copy; OpenStreetMap &copy; CARTO',
       maxZoom: 19
   }).addTo(map);
 
-  // 3. Cargar datos GeoJSON (El nuevo estándar)
+  // Carga de datos
   fetch("{{ '/mapa_datos.json' | relative_url }}")
-      .then(response => {
-        if (!response.ok) throw new Error("No se encuentra el JSON");
-        return response.json();
-      })
+      .then(res => res.json())
       .then(data => {
+          const viajes = Array.isArray(data) ? data : data.features;
           
-          // Recorremos cada "Feature" (viaje) del archivo
-          data.forEach(feature => {
-              
-              // EXTRACTOR DE DATOS (Protocolo GeoJSON)
-              // GeoJSON guarda [Longitud, Latitud], pero Leaflet usa [Latitud, Longitud]
-              var lat = feature.geometry.coordinates[1]; 
-              var lon = feature.geometry.coordinates[0];
-              var props = feature.properties; // Aquí están título, url, foto...
+          viajes.forEach(v => {
+              if (v.geometry && v.geometry.coordinates) {
+                  const [lon, lat] = v.geometry.coordinates;
+                  const props = v.properties;
 
-              // Validar que no sean coordenadas nulas (0,0)
-              if (lat !== 0 && lon !== 0) {
-                  
-                  // Crear marcador
-                  var marker = L.marker([lat, lon]).addTo(map);
-                  
-                  // Crear Popup (Ventana de información)
-                  var popupContent = `
-                      <div style="text-align:center; min-width: 150px;">
-                          ${props.miniatura ? `<img src="${props.miniatura}" style="width:100%; border-radius:4px; margin-bottom:8px;">` : ''}
-                          <h3 style="margin:0; font-size:1rem; color:#007bff;">${props.titulo}</h3>
-                          <p style="margin:5px 0; font-size:0.8rem; color:#666;">${props.fecha}</p>
-                          <a href="${props.url}" style="display:inline-block; margin-top:5px; padding:4px 10px; background:#007bff; color:white; text-decoration:none; border-radius:4px; font-size:0.8rem;">Ver Diario</a>
-                      </div>
-                  `;
-
-                  marker.bindPopup(popupContent);
+                  if (lat && lon) {
+                      L.marker([lat, lon]).addTo(map)
+                       .bindPopup(`
+                          <div style="text-align:center; min-width:160px;">
+                              <img src="${props.miniatura}" style="width:100%; height:100px; object-fit:cover; border-radius:4px; margin-bottom:8px;">
+                              <h3 style="font-size:1rem; margin:0 0 5px 0;">${props.titulo}</h3>
+                              <a href="${props.url}" style="background:#007bff; color:white; padding:4px 10px; border-radius:4px; text-decoration:none; font-size:0.8rem; display:inline-block;">Ver Viaje</a>
+                          </div>
+                       `);
+                  }
               }
           });
       })
-      .catch(error => console.error('Error cargando el mapa:', error));
+      .catch(e => console.error("Error mapa:", e));
 </script>
