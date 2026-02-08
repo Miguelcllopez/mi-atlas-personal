@@ -4,7 +4,7 @@ title: "Panel de Control"
 ---
 
 <style>
-  /* --- ESTILOS DEL MAPA Y CABECERA --- */
+  /* 1. Estilos del Mapa y Cabecera */
   #mapa-principal {
     height: 70vh !important;
     width: 100%;
@@ -24,7 +24,7 @@ title: "Panel de Control"
   }
   .hero-titulo { font-family: serif; font-size: 2.5rem; margin-bottom: 0.5rem; }
 
-  /* --- ESTILOS DEL MENÚ --- */
+  /* 2. Estilos del Menú (Botones) */
   .grid-menu {
     display: flex;
     justify-content: center;
@@ -44,7 +44,7 @@ title: "Panel de Control"
   }
   .tarjeta-link:hover { background: #e2e6ea; transform: translateY(-2px); }
 
-  /* --- ESTILOS DE LA LISTA DE VIAJES (LO QUE FALTABA) --- */
+  /* 3. Estilos de la Lista de Viajes (ESTO ES LO NUEVO) */
   .grid-viajes {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -101,9 +101,7 @@ title: "Panel de Control"
 </div>
 
 <div style="max-width: 1200px; margin: 0 auto; padding: 0 1rem;">
-  <h2 style="border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
-    🌍 Atlas de Operaciones
-  </h2>
+  <h2 style="border-bottom: 2px solid #333; padding-bottom: 10px;">Atlas de Operaciones</h2>
   <div id="mapa-principal"></div>
 </div>
 
@@ -115,25 +113,22 @@ title: "Panel de Control"
   <div class="grid-viajes">
     {% for viaje in site.viajes reversed %}
       <article class="tarjeta-viaje">
-        
         <div class="tarjeta-thumb">
           <a href="{{ viaje.url | relative_url }}">
             <img src="{% if viaje.miniatura contains 'http' %}{{ viaje.miniatura }}{% else %}{{ viaje.miniatura | relative_url }}{% endif %}" 
                  alt="{{ viaje.title }}" loading="lazy">
           </a>
         </div>
-
         <div class="tarjeta-info">
           <span class="tarjeta-fecha">{{ viaje.date | date: "%Y" }}</span>
           <h3 class="tarjeta-titulo">
             <a href="{{ viaje.url | relative_url }}">{{ viaje.title }}</a>
           </h3>
-          <p style="color: #666; font-size: 0.95rem; line-height: 1.5;">
+          <p style="color: #666; font-size: 0.95rem;">
             {{ viaje.excerpt | strip_html | truncatewords: 20 }}
           </p>
           <a href="{{ viaje.url | relative_url }}" class="btn-leer">Leer crónica →</a>
         </div>
-
       </article>
     {% endfor %}
   </div>
@@ -143,37 +138,44 @@ title: "Panel de Control"
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-  // Configuración del Mapa
   var map = L.map('mapa-principal').setView([20, 0], 2);
 
   L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; OpenStreetMap &copy; CARTO',
+      subdomains: 'abcd',
       maxZoom: 19
   }).addTo(map);
 
-  // Carga de datos
+  // Usamos relative_url aquí también para asegurar que encuentre el JSON
   fetch("{{ '/mapa_datos.json' | relative_url }}")
-      .then(res => res.json())
+      .then(response => {
+          if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+          return response.json();
+      })
       .then(data => {
-          const viajes = Array.isArray(data) ? data : data.features;
+          // Aseguramos compatibilidad si data es un array directo o un objeto GeoJSON
+          const features = Array.isArray(data) ? data : data.features;
           
-          viajes.forEach(v => {
-              if (v.geometry && v.geometry.coordinates) {
-                  const [lon, lat] = v.geometry.coordinates;
-                  const props = v.properties;
+          features.forEach(feature => {
+              var lat = feature.geometry.coordinates[1]; 
+              var lon = feature.geometry.coordinates[0];
+              var props = feature.properties;
 
-                  if (lat && lon) {
-                      L.marker([lat, lon]).addTo(map)
-                       .bindPopup(`
-                          <div style="text-align:center; min-width:160px;">
-                              <img src="${props.miniatura}" style="width:100%; height:100px; object-fit:cover; border-radius:4px; margin-bottom:8px;">
-                              <h3 style="font-size:1rem; margin:0 0 5px 0;">${props.titulo}</h3>
-                              <a href="${props.url}" style="background:#007bff; color:white; padding:4px 10px; border-radius:4px; text-decoration:none; font-size:0.8rem; display:inline-block;">Ver Viaje</a>
-                          </div>
-                       `);
-                  }
+              if (lat !== 0 && lon !== 0) {
+                  var marker = L.marker([lat, lon]).addTo(map);
+                  
+                  // Popup con diseño mejorado
+                  var popupContent = `
+                      <div style="text-align:center; min-width: 150px;">
+                          ${props.miniatura ? `<img src="${props.miniatura}" style="width:100%; border-radius:4px; margin-bottom:8px; height:100px; object-fit:cover;">` : ''}
+                          <h3 style="margin:0; font-size:1rem; color:#0b1e33;">${props.titulo}</h3>
+                          <p style="margin:5px 0; font-size:0.8rem; color:#666;">${props.fecha}</p>
+                          <a href="${props.url}" style="display:inline-block; margin-top:5px; padding:4px 10px; background:#007bff; color:white; text-decoration:none; border-radius:4px; font-size:0.8rem;">Ver Diario</a>
+                      </div>
+                  `;
+                  marker.bindPopup(popupContent);
               }
           });
       })
-      .catch(e => console.error("Error mapa:", e));
+      .catch(error => console.error('Error cargando el mapa:', error));
 </script>
