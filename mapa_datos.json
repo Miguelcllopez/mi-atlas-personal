@@ -3,22 +3,23 @@ layout: null
 ---
 [
   {% for viaje in site.viajes %}
+    {% if viaje.latitud %}
     {
       "type": "Feature", 
       "properties": {
         "titulo": "{{ viaje.title | escape }}",
-        "url": "{{ viaje.url | replace: '/_viajes/', '/viajes/' }}",
         "fecha": "{{ viaje.date | date: "%d/%m/%Y" }}",
-        "categoria": "{{ viaje.categoria | default: 'Sin categoría' }}",
-        "miniatura": "{{ viaje.miniatura | default: '' }}"
+        
+        {% comment %} --- AQUÍ ESTÁ LA SOLUCIÓN DEL ENLACE ROTO --- {% endcomment %}
+        "url": "{{ viaje.url | relative_url }}",
+        
+        "miniatura": "{{ viaje.miniatura | relative_url }}"
       },
       "geometry": {
         "type": "Point",
-        "coordinates": [
-          {{ viaje.longitud | default: 0 }}, 
-          {{ viaje.latitud | default: 0 }}
-        ]
+        "coordinates": [{{ viaje.longitud }}, {{ viaje.latitud }}]
       }
     }{% unless forloop.last %},{% endunless %}
+    {% endif %}
   {% endfor %}
 ]
