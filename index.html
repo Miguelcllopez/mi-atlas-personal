@@ -89,8 +89,13 @@ title: "Panel de Control"
   }).addTo(map);
 
   // 3. Cargar datos GeoJSON (El nuevo estándar)
-  fetch('/mapa_datos.json')
-      .then(response => response.json())
+  fetch('{{ site.baseurl }}/mapa_datos.json')
+      .then(response => {
+          if (!response.ok) {
+              throw new Error(`Error HTTP: ${response.status}`);
+          }
+          return response.json();
+      })
       .then(data => {
           
           // Recorremos cada "Feature" (viaje) del archivo
